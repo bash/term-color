@@ -79,13 +79,13 @@ fn parse_response(response: Vec<u8>, prefix: &[u8]) -> Result<Color> {
 }
 
 fn xparsecolor(input: &[u8]) -> Option<Color> {
-    let xterm_color::Color {
-        red: r,
-        green: g,
-        blue: b,
-        ..
-    } = xterm_color::Color::parse(input).ok()?;
-    Some(Color { r, g, b })
+    let color = xterm_color::Color::parse(input).ok()?;
+    Some(Color {
+        red: color.red,
+        green: color.green,
+        blue: color.blue,
+        alpha: color.alpha,
+    })
 }
 
 type Reader<'a> = BufReader<TermReader<RawModeGuard<'a>>>;
@@ -105,7 +105,7 @@ fn query<T>(
     ensure_is_terminal(options.require_terminal_on_stdout)?;
 
     if quirks.is_known_unsupported() {
-        return Err(Error::UnsupportedTerminal);
+        return Err(Error::unsupported());
     }
 
     let mut tty = terminal()?;
@@ -143,7 +143,7 @@ fn read_color_response(r: &mut Reader<'_>) -> Result<Vec<u8>> {
     // the terminal does not recocgnize the color query.
     if !r.buffer().starts_with(b"]") {
         _ = consume_da1_response(r, false);
-        return Err(Error::UnsupportedTerminal);
+        return Err(Error::unsupported());
     }
 
     // Some terminals always respond with BEL (see terminal survey).

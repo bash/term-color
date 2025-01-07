@@ -1,32 +1,12 @@
 use super::*;
 use ColorScheme::*;
 
-const BLACK: Color = Color { r: 0, g: 0, b: 0 };
-const WHITE: Color = Color {
-    r: u16::MAX,
-    g: u16::MAX,
-    b: u16::MAX,
-};
-const DARK_GRAY: Color = Color {
-    r: 0x44ff,
-    g: 0x44ff,
-    b: 0x44ff,
-};
-const DARKER_GRAY: Color = Color {
-    r: 0x22ff,
-    g: 0x22ff,
-    b: 0x22ff,
-};
-const LIGHT_GRAY: Color = Color {
-    r: 0xccff,
-    g: 0xccff,
-    b: 0xccff,
-};
-const LIGHTER_GRAY: Color = Color {
-    r: 0xeeff,
-    g: 0xeeff,
-    b: 0xeeff,
-};
+const BLACK: Color = Color::rgb(0, 0, 0);
+const WHITE: Color = Color::rgb(u16::MAX, u16::MAX, u16::MAX);
+const DARK_GRAY: Color = Color::rgb(0x44ff, 0x44ff, 0x44ff);
+const DARKER_GRAY: Color = Color::rgb(0x22ff, 0x22ff, 0x22ff);
+const LIGHT_GRAY: Color = Color::rgb(0xccff, 0xccff, 0xccff);
+const LIGHTER_GRAY: Color = Color::rgb(0xeeff, 0xeeff, 0xeeff);
 
 mod dark {
     use super::*;
@@ -54,9 +34,9 @@ mod dark {
     #[test]
     fn fg_and_bg_both_dark() {
         for (foreground, background) in [(DARK_GRAY, DARKER_GRAY), (DARKER_GRAY, BLACK)] {
-            assert!(foreground.perceived_lightness_f32() < 0.5);
-            assert!(background.perceived_lightness_f32() < 0.5);
-            assert!(foreground.perceived_lightness_f32() != background.perceived_lightness_f32());
+            assert!(foreground.perceived_lightness() < 0.5);
+            assert!(background.perceived_lightness() < 0.5);
+            assert!(foreground.perceived_lightness() != background.perceived_lightness());
 
             let palette = ColorPalette {
                 foreground,
@@ -93,10 +73,10 @@ mod light {
     #[test]
     fn fg_and_bg_both_light() {
         for (foreground, background) in [(LIGHT_GRAY, LIGHTER_GRAY), (LIGHTER_GRAY, WHITE)] {
-            assert!(foreground.perceived_lightness_f32() > 0.5);
-            assert!(background.perceived_lightness_f32() > 0.5);
+            assert!(foreground.perceived_lightness() > 0.5);
+            assert!(background.perceived_lightness() > 0.5);
             assert!(
-                (foreground.perceived_lightness_f32() - background.perceived_lightness_f32()).abs()
+                (foreground.perceived_lightness() - background.perceived_lightness()).abs()
                     >= f32::EPSILON
             );
 

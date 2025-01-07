@@ -8,7 +8,7 @@ keywords = ["terminal", "light", "dark", "color-scheme", "cli"]
 license = "MIT OR Apache-2.0"
 version.workspace = true
 edition = "2021"
-rust-version = "1.70.0" # Search for `FIXME(msrv)` when bumping.
+rust-version = "1.74.0" # Search for `FIXME(msrv)` when bumping.
 exclude = [".github", ".gitignore", "*.sh", "benchmark/**/*", "doc/issues.md", "deny.toml"]
 
 [dependencies]

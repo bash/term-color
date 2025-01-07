@@ -20,6 +20,17 @@ match color_scheme(QueryOptions::default()).unwrap() {
 
 ## [Docs](https://docs.rs/terminal-colorsaurus)
 
+## MSRV Policy
+
+This crate's Minimum Supported Rust Version (MSRV) is based
+on the MSRVs of downstream users such as `delta` and `bat`.
+Changes to the MSRV will be accompanied by a minor version bump.
+
+The following formula determines the MSRV:
+```text
+min(msrv(bat), msrv(delta))
+```
+
 ## Inspiration
 This crate borrows ideas from many other projects. This list is by no means exhaustive.
 

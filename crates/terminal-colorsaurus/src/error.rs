@@ -19,7 +19,7 @@ pub enum Error {
     /// [`QueryOptions::require_terminal_on_stdout`]: `crate::QueryOptions::require_terminal_on_stdout`
     NotATerminal(NotATerminalError),
     /// The terminal does not support querying for the foreground or background color.
-    UnsupportedTerminal,
+    UnsupportedTerminal(UnsupportedTerminalError),
 }
 
 impl error::Error for Error {
@@ -27,6 +27,7 @@ impl error::Error for Error {
         match self {
             Error::Io(source) => Some(source),
             Error::NotATerminal(source) => Some(source),
+            Error::UnsupportedTerminal(source) => Some(source),
             _ => None,
         }
     }
@@ -47,9 +48,7 @@ impl fmt::Display for Error {
                 write!(f, "operation did not complete within {timeout:?}")
             }
             Error::NotATerminal(e) => fmt::Display::fmt(e, f),
-            Error::UnsupportedTerminal {} => {
-                write!(f, "the terminal does not support querying for its colors")
-            }
+            Error::UnsupportedTerminal(e) => fmt::Display::fmt(e, f),
         }
     }
 }
@@ -57,6 +56,12 @@ impl fmt::Display for Error {
 impl From<io::Error> for Error {
     fn from(source: io::Error) -> Self {
         Error::Io(source)
+    }
+}
+
+impl Error {
+    pub(crate) fn unsupported() -> Self {
+        Error::UnsupportedTerminal(UnsupportedTerminalError)
     }
 }
 
@@ -68,6 +73,18 @@ impl error::Error for NotATerminalError {}
 
 impl fmt::Display for NotATerminalError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "stdout is not connected to a terminal")
+        f.write_str("stdout is not connected to a terminal")
+    }
+}
+
+#[derive(Debug)]
+#[non_exhaustive]
+pub struct UnsupportedTerminalError;
+
+impl error::Error for UnsupportedTerminalError {}
+
+impl fmt::Display for UnsupportedTerminalError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str("the terminal does not support querying for its colors")
     }
 }

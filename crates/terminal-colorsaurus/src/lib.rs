@@ -32,7 +32,7 @@
 //! use terminal_colorsaurus::{foreground_color, QueryOptions};
 //!
 //! let fg = foreground_color(QueryOptions::default()).unwrap();
-//! println!("rgb({}, {}, {})", fg.r, fg.g, fg.b);
+//! println!("rgb({}, {}, {})", fg.red, fg.green, fg.blue);
 //! ```
 //!
 //! ## Optional Dependencies
@@ -85,7 +85,7 @@ pub use color::*;
 
 /// The color palette i.e. foreground and background colors of the terminal.
 /// Retrieved by calling [`color_palette`].
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 #[non_exhaustive]
 pub struct ColorPalette {
     /// The foreground color of the terminal.
@@ -98,12 +98,11 @@ pub struct ColorPalette {
 ///
 /// The easiest way to retrieve the color scheme
 /// is by calling [`color_scheme`].
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[allow(clippy::exhaustive_enums)]
 #[doc(alias = "Theme")]
 pub enum ColorScheme {
     /// The terminal uses a dark background with light text.
-    #[default]
     Dark,
     /// The terminal uses a light background with dark text.
     Light,
@@ -112,8 +111,8 @@ pub enum ColorScheme {
 impl ColorPalette {
     /// Determines if the terminal uses a dark or light background.
     pub fn color_scheme(&self) -> ColorScheme {
-        let fg = self.foreground.perceived_lightness_f32();
-        let bg = self.background.perceived_lightness_f32();
+        let fg = self.foreground.perceived_lightness();
+        let bg = self.background.perceived_lightness();
         if bg < fg {
             ColorScheme::Dark
         } else if bg > fg || bg > 0.5 {

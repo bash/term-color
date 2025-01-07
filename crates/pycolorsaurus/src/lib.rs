@@ -176,9 +176,10 @@ impl Color {
     #[new]
     fn new(red: u8, green: u8, blue: u8) -> Self {
         Self(imp::Color {
-            r: scale_to_u16(red),
-            g: scale_to_u16(green),
-            b: scale_to_u16(blue),
+            red: scale_to_u16(red),
+            green: scale_to_u16(green),
+            blue: scale_to_u16(blue),
+            alpha: u16::MAX,
         })
     }
 
@@ -197,10 +198,7 @@ impl Color {
         self.0.scale_to_8bit().2
     }
 
-    /// The perceived lightness of the color
-    /// as a value between 0 (black) and 100 (white)
-    /// where 50 is the perceptual "middle grey".
-    fn perceived_lightness(&self) -> u8 {
+    fn perceived_lightness(&self) -> f32 {
         self.0.perceived_lightness()
     }
 
@@ -221,7 +219,7 @@ impl Color {
 
     #[pyo3(name = "__repr__")]
     fn repr(&self, python: Python<'_>) -> PyResult<String> {
-        let (r, g, b) = self.0.scale_to_8bit();
+        let (r, g, b, _) = self.0.scale_to_8bit();
         let ty = type_name::<Self>(&python)?;
         Ok(format!("<{ty} #{r:02x}{g:02x}{b:02x}>"))
     }
